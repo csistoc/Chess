@@ -9,20 +9,8 @@ import model.PieceModel;
 import model.PieceType;
 import model.Player;
 import model.TableModel;
-import model.CheckPiece;
 
 public class TableController {
-	
-	private static void ownerSwap(TableModel table, int start_x, int start_y, int finish_x, int finish_y, boolean debug) {
-		/*Player start = table.getPieces(start_x, start_y).getOwner();
-		Player finish = table.getPieces(finish_x, finish_y).getOwner();
-		table.getPieces(start_x, start_y).setOwner(finish);
-		table.getPieces(finish_x, finish_y).setOwner(start);
-		*/
-		Player aux = table.getPieces(start_x, start_y).getOwner();
-		table.getPieces(start_x, start_y).setOwner(table.getPieces(finish_x, finish_y).getOwner());
-		table.getPieces(finish_x, finish_y).setOwner(aux);
-	}
 	
 	private static void locationSwap(TableModel table, int start_x, int start_y, int finish_x, int finish_y, boolean debug) {
 		if (debug) {
