@@ -1,0 +1,2 @@
+Hot Seat Chess version 1.1 unstable
+A simple chess game that allows two players to play against each other on the same computer.

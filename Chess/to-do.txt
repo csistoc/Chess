@@ -1,1 +1,3 @@
-=> Done <=
+=> check why the main menu button on the chess game frame is closing the program
+=> check why the exit button on the chess game frame is not working
+=> move the brain of the program from the view into an controller and synchronize them
