@@ -7,11 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import controller.ChessGameFrameController;
 import controller.CurrentTime;
-import controller.DebugFileController;
+import controller.LogFileController;
 import controller.PieceController;
 import controller.TableController;
 import model.Player;
@@ -29,20 +30,18 @@ public class ChessGameMainPanel extends JPanel {
     private GridLayout tableLayout = new GridLayout(gridX, gridY);
 	private JButton[][] buttonPieces = new JButton[gridX][gridY];
     
-	public ChessGameMainPanel(ChessGameFrame chessGameFrame, int sizeX, int sizeY, TableModel table, 
-			EndGameFrame endGameFrame, JTextArea textArea, CurrentTime time, Boolean debug) {
+	public ChessGameMainPanel(String frameName, ChessGameFrame chessGameFrame, int sizeX, int sizeY, TableModel table, 
+			JTextArea textArea, CurrentTime time, Boolean debug) {
 		super();
 		ActionListener actionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (firstButtonX == -1 && firstButtonY == -1) {
 					JButton selectedBtn = (JButton) e.getSource();
 					int[] aux = ChessGameFrameController.selectButtonCoord(buttonPieces, selectedBtn);
-					if (TableController.isKingInCheckMate(table, playerTurn, debug)) {
-						chessGameFrame.setVisible(false);
-						endGameFrame.setVisible(true);
-					}
+					if (TableController.isKingInCheckMate(table, playerTurn, debug))
+						endGame(ChessGameFrameController.getCurrentPlayer(playerTurn - 1), chessGameFrame, frameName, sizeX, sizeY, table, time);
 					if (debug)
-						DebugFileController.writeToFile("[TableView] selectedBtn: " + table.getPieces(aux[0], aux[1]) + "\n");
+						LogFileController.writeToFile("[TableView] selectedBtn: " + table.getPieces(aux[0], aux[1]) + "\n");
 					if (playerTurn % 2 == 0 && table.getPieces(aux[0], aux[1]).getOwner() == Player.PLAYER1) {
 						firstButtonX = aux[0];
 						firstButtonY = aux[1];
@@ -64,7 +63,7 @@ public class ChessGameMainPanel extends JPanel {
 					if ((secondButtonX != -1 && secondButtonY != -1)) {
 						boolean moveIsValid = PieceController.isGeneralMoveValid(table, firstButtonX, firstButtonY, secondButtonX, secondButtonY, debug);
 						if (debug)
-							DebugFileController.writeToFile("[tableView] First btn: " + firstButtonX + " " + firstButtonY + " Second btn: " + secondButtonX + " " + secondButtonY 
+							LogFileController.writeToFile("[tableView] First btn: " + firstButtonX + " " + firstButtonY + " Second btn: " + secondButtonX + " " + secondButtonY 
 									+ "\n" + "[tableView] Start: " + table.getPieces(firstButtonX, firstButtonY)
 									+ "\n" + "[tableView] Finish: " + table.getPieces(secondButtonX, secondButtonY)
 									+ "\n" + "[tableView] Boolean: " + moveIsValid);
@@ -72,7 +71,7 @@ public class ChessGameMainPanel extends JPanel {
 							TableModel tempTable = new TableModel(table);
 							TableController.makeMove(tempTable, firstButtonX, firstButtonY, secondButtonX, secondButtonY, debug);
 							if (debug)
-								DebugFileController.writeToFile("[tableView] Start: " + table.getPieces(firstButtonX, firstButtonY) 
+								LogFileController.writeToFile("[tableView] Start: " + table.getPieces(firstButtonX, firstButtonY) 
 									+ "\n" + "[tableView] Finish: " + table.getPieces(secondButtonX, secondButtonY));
 							if (TableController.tick(tempTable, playerTurn, textArea, time, debug)) {
 								ChessGameFrameController.makeMove(buttonPieces[firstButtonX][firstButtonY], buttonPieces[secondButtonX][secondButtonY], blank);
@@ -85,7 +84,7 @@ public class ChessGameMainPanel extends JPanel {
 						}
 						else textArea.append("[" + time.getCurrentTime() + "] Wrong move. Please try again\n");
 						if (debug)
-							DebugFileController.writeToFile("[tableView]\n" + table + "\n");
+							LogFileController.writeToFile("[tableView]\n" + table + "\n");
 					}
 				}
 			}
@@ -111,5 +110,30 @@ public class ChessGameMainPanel extends JPanel {
 		setPreferredSize(new Dimension(sizeX, sizeY));
 	}
 	
-	
+	private static void endGame(String winPlayer, ChessGameFrame chessGameFrame, String frameName, int sizeX, int sizeY, TableModel table, CurrentTime time) {
+		String text = winPlayer + " has won. Would you like to start another game?";
+		Object[] options = {"Yes",
+				"Return to main menu", 
+                "Exit"};
+		int choice = JOptionPane.showOptionDialog(chessGameFrame, 
+				text,
+				"Check mate Question",
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null, 
+				options, 
+				options[0]); 
+		if (choice == JOptionPane.YES_OPTION) {
+			TableModel newTable = new TableModel();
+			@SuppressWarnings("unused")
+			ChessGameFrame newChessGameFrame = new ChessGameFrame(frameName, sizeY, sizeY, newTable, time);
+			chessGameFrame.dispose();
+		}
+		else if(choice == JOptionPane.NO_OPTION) {
+			@SuppressWarnings("unused")
+			StartMenuFrame startMenuFrame = new StartMenuFrame(frameName, sizeX, sizeY, table, time);
+			chessGameFrame.dispose();
+		}
+		else System.exit(0);
+	}
 }

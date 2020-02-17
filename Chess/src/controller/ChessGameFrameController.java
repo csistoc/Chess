@@ -3,6 +3,9 @@ package controller;
 import java.awt.Color;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
+import model.Player;
 
 public class ChessGameFrameController {
 	
@@ -40,5 +43,21 @@ public class ChessGameFrameController {
     		btn2.setForeground(btn1.getForeground());
     		btn1.setText(blank);
     	}
+    }
+	
+	public static String getCurrentPlayer(int playerTurn) {
+		if (playerTurn % 2 == 0)
+			return Player.PLAYER1.name();
+		else return Player.PLAYER2.name();
+	}
+	
+	public static String getCurrentPlayer(int playerTurn, String player1, String player2) {
+		if (playerTurn % 2 == 0)
+			return player1;
+		else return player2;
+	}
+	
+	public static void workInProgressInfo() {
+        JOptionPane.showMessageDialog(null, "Work in progress, feature not available yet.", "Work in progress", JOptionPane.INFORMATION_MESSAGE);
     }
 }

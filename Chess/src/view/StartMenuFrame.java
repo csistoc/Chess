@@ -14,6 +14,10 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import controller.ChessGameFrameController;
+import controller.CurrentTime;
+import model.TableModel;
+
 public class StartMenuFrame extends JFrame {
 
 	private static final long serialVersionUID = -7597230372365270806L;
@@ -22,26 +26,33 @@ public class StartMenuFrame extends JFrame {
 	private static final String exitGameBtnName = "Exit game";
 	private static final String aboutBtnName = "About";
 	
-	public StartMenuFrame(String frameName, int sizeX, int sizeY, ChessGameFrame gameFrame) {
+	public StartMenuFrame(String frameName, int sizeX, int sizeY, TableModel table, CurrentTime time) {
 		super(frameName);
-		add(createMainPanel(sizeX, sizeY, gameFrame), BorderLayout.CENTER);
+		add(createMainPanel(frameName, sizeX, sizeY, time), BorderLayout.CENTER);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
         setVisible(true);
 	}
 	
-	private JPanel createMainPanel(int sizeX, int sizeY, ChessGameFrame gameFrame) {
+	private JPanel createMainPanel(String frameName, int sizeX, int sizeY, CurrentTime time) {
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new GridLayout(4, 1));
 		mainPanel.setPreferredSize(new Dimension(sizeX, sizeY));
 		JButton newGameBtn = new JButton(newGameBtnName);
 		newGameBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
-				gameFrame.setVisible(true);
-				setVisible(false);
+    			TableModel table = new TableModel();
+    			@SuppressWarnings("unused")
+				ChessGameFrame gameFrame = new ChessGameFrame(frameName, sizeY, sizeY, table, time);
+				dispose();
     		}
 		});
 		JButton loadGameBtn = new JButton(loadGameBtnName);
+		loadGameBtn.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent e) {
+    			ChessGameFrameController.workInProgressInfo();
+    		}
+		});
 		JButton aboutBtn = new JButton(aboutBtnName);
 		aboutBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
@@ -57,7 +68,7 @@ public class StartMenuFrame extends JFrame {
     			    	System.out.println("An error occurred.");
     			    	ex.printStackTrace();
     			}
-    			infoBox(aboutTextField, aboutBtnName);
+    			aboutInfoBox(aboutTextField, aboutBtnName);
     		}
 		});
 		JButton exitGameBtn = new JButton(exitGameBtnName);
@@ -73,7 +84,7 @@ public class StartMenuFrame extends JFrame {
 		return mainPanel;
 	}
 	
-	private static void infoBox(String infoMessage, String titleBar) {
+	private static void aboutInfoBox(String infoMessage, String titleBar) {
         JOptionPane.showMessageDialog(null, infoMessage, titleBar, JOptionPane.INFORMATION_MESSAGE);
     }
 }

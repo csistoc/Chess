@@ -14,8 +14,8 @@ public class TableController {
 	
 	private static void locationSwap(TableModel table, int start_x, int start_y, int finish_x, int finish_y, boolean debug) {
 		if (debug) {
-			System.out.println("[locationSwap] Start: " + table.getPieces(start_x, start_y));
-			System.out.println("[locationSwap] Finish: " + table.getPieces(finish_x, finish_y));
+			LogFileController.writeToFile("[locationSwap] Start: " + table.getPieces(start_x, start_y));
+			LogFileController.writeToFile("[locationSwap] Finish: " + table.getPieces(finish_x, finish_y));
 		}
 		int startIndex = table.getPieceIndex(start_x, start_y);
 		int finishIndex = table.getPieceIndex(finish_x, finish_y);
@@ -24,23 +24,9 @@ public class TableController {
 		table.getPieces().get(finishIndex).setLocation(start_x, start_y);
 		table.getPieces().set(startIndex, aux);
 		if (debug) {
-			System.out.println("[locationSwap] Start: " + table.getPieces(start_x, start_y));
-			System.out.println("[locationSwap] Finish: " + table.getPieces(finish_x, finish_y));
+			LogFileController.writeToFile("[locationSwap] Start: " + table.getPieces(start_x, start_y));
+			LogFileController.writeToFile("[locationSwap] Finish: " + table.getPieces(finish_x, finish_y));
 		}
-	}
-	
-	public static void reverseTable(TableModel table, int n, int m, boolean debug) {
-		for (int i = 0; i < n / 2; i++)
-			for (int j = 0; j < m; j++) {
-				System.out.println("[reverseTable] Start: " + table.getPieces(i, j));
-				System.out.println("[reverseTable] Finish: " + table.getPieces((n-1)-i, j) + "\n------------------");
-				//if(table.getPieces(i, j).getType().equals(PieceType.BLANK) || table.getPieces((n-1)-i, j).getType().equals(PieceType.BLANK))
-				//ownerSwap(table, i, j, (n - 1) - i, j);
-				//System.out.println("i: " + i + " j: " + j + " (n-1)-i: " + ((n-1)-i) + " j: " + j);
-				locationSwap(table, i, j, (n - 1) - i, j, debug);
-				System.out.println("[reverseTable] Start: " + table.getPieces(i, j));
-				System.out.println("[reverseTable] Finish: " + table.getPieces((n-1)-i, j) + "\n------------------\n------------------");
-			}
 	}
 	
 	public static boolean isBlank(TableModel table, int x, int y) {
@@ -51,7 +37,6 @@ public class TableController {
 	}
 	
 	public static void makeMove(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
-		//System.out.println("Boolean: " + TableController.isBlank(table, finish_x, finish_y));
 		if (!TableController.isBlank(table, finishX, finishY))
 			table.getPieces(finishX, finishY).setDead();
 		locationSwap(table, startX, startY, finishX, finishY, debug);
@@ -77,56 +62,6 @@ public class TableController {
 		else return Player.PLAYER2;
 	}
 	
-	private static ArrayList<Integer> calculatePossibleTrajectory(TableModel table, int startX, int startY, int finishX, int finishY) {
-		ArrayList<Integer> trajectory = new ArrayList<Integer>();
-		switch(table.getPieces(startX, startY).getType()) {
-			case BISHOP:
-				return trajectory;
-			case ROOK:
-				return trajectory;
-			case QUEEN:
-				return trajectory;
-			default:
-				return null;
-		}
-	}
-	
-	private static ArrayList<Integer> calculatePossibleMoves(TableModel table, int startX, int startY) {
-		ArrayList<Integer> possibleMoves = new ArrayList<Integer>();
-		for (int x = 0; x < Math.sqrt(table.getPieces().size()); x++)
-			for (int y = 0; y < Math.sqrt(table.getPieces().size()); y++)
-				if (PieceController.isGeneralMoveValid(table, startX, startY, x, y, false))
-					if (table.getPieces(x, y).getType() == PieceType.BISHOP || table.getPieces(x, y).getType() == PieceType.ROOK ||
-							table.getPieces(x, y).getType() == PieceType.QUEEN) {
-								ArrayList<Integer> trajectory = calculatePossibleTrajectory(table, startX, startY, x, y);
-								possibleMoves.add(x);
-								possibleMoves.add(y);
-								for (int i = 0; i < trajectory.size(); i++)
-									possibleMoves.add(trajectory.get(i));
-					}
-					else {
-						possibleMoves.add(x);
-						possibleMoves.add(y);
-					}
-		return possibleMoves;
-	}
-	
-	public static CheckPiece isInCheckBy(TableModel table, int kingX, int kingY, Player kingOwner, boolean debug) {
-		ArrayList<PieceModel> pieces = table.getPieces();
-		for (int i = 0; i < pieces.size(); i++) {
-			PieceModel currPiece = pieces.get(i);
-			if (currPiece.getOwner() != kingOwner && Player.NEUTRAL != currPiece.getOwner() && PieceType.KING != currPiece.getType())
-				if (PieceController.isGeneralMoveValid(table, currPiece.getLocation().getX(), currPiece.getLocation().getY(), kingX, kingY, false)) {
-					if (debug) 
-						System.out.println("[isInCheckBy] found piece at " + currPiece);
-					ArrayList<Integer> possibleMoves = calculatePossibleMoves(table, currPiece.getLocation().getX(), currPiece.getLocation().getY());
-					CheckPiece checkPiece = new CheckPiece(true, currPiece, possibleMoves);
-					return checkPiece;
-				}
-		}
-		return new CheckPiece(false, null, null);
-	}
-	
 	public static boolean simpleIsCheck(TableModel table, int kingX, int kingY, Player kingOwner, boolean debug) {
 		ArrayList<PieceModel> pieces = table.getPieces();
 		for (int i = 0; i < pieces.size(); i++) {
@@ -134,7 +69,7 @@ public class TableController {
 			if (currPiece.getOwner() != kingOwner && Player.NEUTRAL != currPiece.getOwner() && PieceType.KING != currPiece.getType())
 				if (PieceController.isGeneralMoveValid(table, currPiece.getLocation().getX(), currPiece.getLocation().getY(), kingX, kingY, debug)) {
 					if (debug) 
-						System.out.println("[simpleIsCheck] found piece at " + currPiece);
+						LogFileController.writeToFile("[simpleIsCheck] found piece at " + currPiece);
 					return true;
 				}
 		}
@@ -204,5 +139,9 @@ public class TableController {
 				return false;
 			}
 		return true;
+	}
+	
+	public static void run() {
+		
 	}
 }

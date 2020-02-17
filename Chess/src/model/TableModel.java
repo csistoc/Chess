@@ -5,11 +5,9 @@ import java.util.ArrayList;
 public class TableModel {
 	
 	private ArrayList<PieceModel> pieces;
-	private int sizeX, sizeY;
+	private int sizeX = 8, sizeY = 8;
 	
-	public TableModel(int sizeX, int sizeY) {
-		this.sizeX = sizeX;
-		this.sizeY = sizeY;
+	public TableModel() {
 		pieces = new ArrayList<PieceModel>();
 		for (int i = 0; i < sizeX; i++)
 			for (int j = 0; j < sizeY; j++)
