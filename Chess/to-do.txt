@@ -1,2 +1,2 @@
-=> check and repair logs
-=> move the brain of the program from the view into an controller and synchronize them
+=> make leader board and main menu look a little better
+=> implement load game/save game options

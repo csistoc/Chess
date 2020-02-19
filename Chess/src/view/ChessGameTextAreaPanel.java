@@ -19,12 +19,11 @@ public class ChessGameTextAreaPanel extends JPanel {
 	
 	private static final long serialVersionUID = -3197877034264165550L;
 	private static final String viewLogFileBtnName = "View logs file";
-	private static final String logBtnName = "Logs";
 	private static final String mainMenuBtnName = "Main menu";
 	private static final String exitBtnName = "Exit";
 	private JTextArea textArea = new JTextArea(20, 15);
 	
-	public ChessGameTextAreaPanel(String frameName, int sizeX, int sizeY, TableModel table, CurrentTime time, ChessGameFrame chessGameFrame, Boolean[] debug) {
+	public ChessGameTextAreaPanel(String frameName, int sizeX, int sizeY, TableModel table, CurrentTime time, ChessGameFrame chessGameFrame) {
 		super();
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         textArea.setLineWrap(true);
@@ -38,23 +37,8 @@ public class ChessGameTextAreaPanel extends JPanel {
     			        try {
 							Desktop.getDesktop().open(LogFileController.getFile());
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-    			}
-    		}
-        });
-        viewLogsFileBtn.setVisible(false);
-        JButton logBtn = new JButton(logBtnName);
-        logBtn.addActionListener(new ActionListener() {
-    		public void actionPerformed(ActionEvent e) {
-    			if (debug[0]) {
-    				viewLogsFileBtn.setVisible(false);
-    				debug[0] = false;
-    			}
-    			else {
-    				debug[0] = true;
-    				viewLogsFileBtn.setVisible(true);
     			}
     		}
         });
@@ -62,7 +46,7 @@ public class ChessGameTextAreaPanel extends JPanel {
         mainMenuBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
     			@SuppressWarnings("unused")
-				StartMenuFrame startMenuFrame = new StartMenuFrame(frameName, sizeX, sizeY, table, time);
+				StartMenuFrame startMenuFrame = new StartMenuFrame(frameName, sizeX, sizeY, time);
     			chessGameFrame.dispose();
     		}
         });
@@ -72,7 +56,6 @@ public class ChessGameTextAreaPanel extends JPanel {
     			System.exit(0);
     		}
         });
-        add(logBtn);
         add(viewLogsFileBtn);
         add(mainMenuBtn);
         add(exitBtn);

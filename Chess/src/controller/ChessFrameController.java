@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 
 import model.Player;
 
-public class ChessGameFrameController {
+public class ChessFrameController {
 	
 	public static int[] selectButtonCoord(JButton[][] buttons, JButton selectedBtn) {
     	int[] output = new int[2];

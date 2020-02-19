@@ -10,9 +10,8 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import controller.ChessGameFrameController;
+import controller.ChessFrameController;
 import controller.CurrentTime;
-import controller.LogFileController;
 import controller.PieceController;
 import controller.TableController;
 import model.Player;
@@ -31,17 +30,15 @@ public class ChessGameMainPanel extends JPanel {
 	private JButton[][] buttonPieces = new JButton[gridX][gridY];
     
 	public ChessGameMainPanel(String frameName, ChessGameFrame chessGameFrame, int sizeX, int sizeY, TableModel table, 
-			JTextArea textArea, CurrentTime time, Boolean debug) {
+			JTextArea textArea, CurrentTime time) {
 		super();
 		ActionListener actionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (firstButtonX == -1 && firstButtonY == -1) {
 					JButton selectedBtn = (JButton) e.getSource();
-					int[] aux = ChessGameFrameController.selectButtonCoord(buttonPieces, selectedBtn);
-					if (TableController.isKingInCheckMate(table, playerTurn, debug))
-						endGame(ChessGameFrameController.getCurrentPlayer(playerTurn - 1), chessGameFrame, frameName, sizeX, sizeY, table, time);
-					if (debug)
-						LogFileController.writeToFile("[TableView] selectedBtn: " + table.getPieces(aux[0], aux[1]) + "\n");
+					int[] aux = ChessFrameController.selectButtonCoord(buttonPieces, selectedBtn);
+					if (TableController.isKingInCheckMate(table, playerTurn))
+						endGame(ChessFrameController.getCurrentPlayer(playerTurn - 1), chessGameFrame, frameName, sizeX, sizeY, table, time);
 					if (playerTurn % 2 == 0 && table.getPieces(aux[0], aux[1]).getOwner() == Player.PLAYER1) {
 						firstButtonX = aux[0];
 						firstButtonY = aux[1];
@@ -57,25 +54,17 @@ public class ChessGameMainPanel extends JPanel {
 				else {
 					secondButtonX = secondButtonY = -1;
 					JButton selectedBtn = (JButton) e.getSource();
-					int[] aux = ChessGameFrameController.selectButtonCoord(buttonPieces, selectedBtn);
+					int[] aux = ChessFrameController.selectButtonCoord(buttonPieces, selectedBtn);
 					secondButtonX = aux[0];
 					secondButtonY = aux[1];
 					if ((secondButtonX != -1 && secondButtonY != -1)) {
-						boolean moveIsValid = PieceController.isGeneralMoveValid(table, firstButtonX, firstButtonY, secondButtonX, secondButtonY, debug);
-						if (debug)
-							LogFileController.writeToFile("[tableView] First btn: " + firstButtonX + " " + firstButtonY + " Second btn: " + secondButtonX + " " + secondButtonY 
-									+ "\n" + "[tableView] Start: " + table.getPieces(firstButtonX, firstButtonY)
-									+ "\n" + "[tableView] Finish: " + table.getPieces(secondButtonX, secondButtonY)
-									+ "\n" + "[tableView] Boolean: " + moveIsValid);
+						boolean moveIsValid = PieceController.isGeneralMoveValid(table, firstButtonX, firstButtonY, secondButtonX, secondButtonY);
 						if (moveIsValid) {
 							TableModel tempTable = new TableModel(table);
-							TableController.makeMove(tempTable, firstButtonX, firstButtonY, secondButtonX, secondButtonY, debug);
-							if (debug)
-								LogFileController.writeToFile("[tableView] Start: " + table.getPieces(firstButtonX, firstButtonY) 
-									+ "\n" + "[tableView] Finish: " + table.getPieces(secondButtonX, secondButtonY));
-							if (TableController.tick(tempTable, playerTurn, textArea, time, debug)) {
-								ChessGameFrameController.makeMove(buttonPieces[firstButtonX][firstButtonY], buttonPieces[secondButtonX][secondButtonY], blank);
-								TableController.makeMove(table, firstButtonX, firstButtonY, secondButtonX, secondButtonY, debug);
+							TableController.makeMove(tempTable, firstButtonX, firstButtonY, secondButtonX, secondButtonY);
+							if (TableController.tick(tempTable, playerTurn, textArea, time)) {
+								ChessFrameController.makeMove(buttonPieces[firstButtonX][firstButtonY], buttonPieces[secondButtonX][secondButtonY], blank);
+								TableController.makeMove(table, firstButtonX, firstButtonY, secondButtonX, secondButtonY);
 								playerTurn++;
 							}
 							buttonPieces[firstButtonX][firstButtonY].setBackground(backgroundColor);
@@ -83,8 +72,6 @@ public class ChessGameMainPanel extends JPanel {
 							textArea.append("[" + time.getCurrentTime() + "] Player " + ((playerTurn % 2) + 1) + " turn's\n");
 						}
 						else textArea.append("[" + time.getCurrentTime() + "] Wrong move. Please try again\n");
-						if (debug)
-							LogFileController.writeToFile("[tableView]\n" + table + "\n");
 					}
 				}
 			}
@@ -131,7 +118,7 @@ public class ChessGameMainPanel extends JPanel {
 		}
 		else if(choice == JOptionPane.NO_OPTION) {
 			@SuppressWarnings("unused")
-			StartMenuFrame startMenuFrame = new StartMenuFrame(frameName, sizeX, sizeY, table, time);
+			StartMenuFrame startMenuFrame = new StartMenuFrame(frameName, sizeX, sizeY, time);
 			chessGameFrame.dispose();
 		}
 		else System.exit(0);

@@ -7,15 +7,46 @@ import java.io.IOException;
 
 public class LogFileController {
 	
-	private static final String logFileName = "logs.txt";
+	private static final String logFileName = "log.txt";
+	private static BufferedWriter writer;
+	private static CurrentTime time = new CurrentTime();
+	private static final String upperLimitStackTrace = "actionPerformed";
+	private static final String firstAvoidStackTrace = "getStackTrace";
+	private static final String secondAvoidStackTrace = "writeToFile";
+	
+	public static void initLogFile() {
+		try {
+			File file = new File(logFileName);
+			if (!file.createNewFile()) {
+				file.delete();
+				file.createNewFile();
+			}
+			writer = new BufferedWriter(new FileWriter(logFileName, true));
+		} catch (IOException e) {
+			closeWriter();
+			e.printStackTrace();
+		}
+	}
 	
 	public static void writeToFile(String text) {
 		try {
-			File file = new File(logFileName);
-			file.mkdirs();
-			file.createNewFile();
-			BufferedWriter writer = new BufferedWriter(new FileWriter(logFileName));
-			writer.write(text);
+			writer.write("[" + time.getCurrentTime() + "] ");
+			for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+				if (upperLimitStackTrace.equals(ste.getMethodName()))
+					break;
+				if (!firstAvoidStackTrace.equals(ste.getMethodName()) && !secondAvoidStackTrace.equals(ste.getMethodName()))
+					writer.write(ste.getMethodName() + " : ");
+			}
+			writer.write(text + "\n");
+			//writer.write("[" + time.getCurrentTime() + "]" + text + "\n");
+		} catch (Exception e) {
+			closeWriter();
+			e.printStackTrace();
+		}
+	}
+	
+	public static void closeWriter() {
+		try {
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();

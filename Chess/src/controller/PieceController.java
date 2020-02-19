@@ -1,33 +1,28 @@
 package controller;
 
 import model.PieceModel;
-import model.PieceType;
 import model.Player;
 import model.TableModel;
 
 public class PieceController {
 	
-	public static boolean isMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
+	public static boolean isMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
 		if (table.getPieces(startX, startY).getOwner() == table.getPieces(finishX, finishY).getOwner()) { // same owner
-			if (debug)
-				LogFileController.writeToFile("[isMoveValid] same owner check failed");
+			LogFileController.writeToFile("same owner check failed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 			return false;
 		}
-		if (debug)
-			LogFileController.writeToFile("[isMoveValid] same owner check passed");
+		LogFileController.writeToFile("same owner check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		int size = table.getPieces().size();
 		if (finishX >= size || finishY >= size || finishX < 0 || finishY < 0) { // out of table
-			if (debug)
-				LogFileController.writeToFile("[isMoveValid] out of bounds check failed");
+			LogFileController.writeToFile("out of bounds check failed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 			return false;
 		}
-		if (debug)
-			LogFileController.writeToFile("[isMoveValid] out of bounds check passed");
+		LogFileController.writeToFile("out of bounds check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		return true;
 	}
 	
-	private static boolean isPawnMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
-		if (!isMoveValid(table, startX, startY, finishX, finishY, debug))
+	private static boolean isPawnMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
+		if (!isMoveValid(table, startX, startY, finishX, finishY))
 			return false;
 		PieceModel start = table.getPieces(startX, startY);
 		PieceModel finish = table.getPieces(finishX, finishY);
@@ -37,18 +32,15 @@ public class PieceController {
 				if (finish.getOwner() != Player.NEUTRAL)
 					if (start.getOwner() != finish.getOwner())
 						if (startX + 1 == finishX && startY - 1 == finishY) { // lower left attack
-							if (debug)
-								LogFileController.writeToFile("[isPawnMoveValid] lower left attack");
+							LogFileController.writeToFile("lower left attack");
 							return true;
 						}
 						else if (startX + 1 == finishX && startY + 1 == finishY) { // lower right attack
-							if (debug)
-								LogFileController.writeToFile("[isPawnMoveValid] lower right attack");
+							LogFileController.writeToFile("lower right attack");
 							return true;
 						}
 				if (startX + 1 == finishX && startY == finishY && finish.getOwner() == Player.NEUTRAL) { // front move
-					if (debug)
-						LogFileController.writeToFile("[isPawnMoveValid] lower front move");
+					LogFileController.writeToFile("lower front move");
 					return true;
 				}
 				return false;
@@ -57,18 +49,15 @@ public class PieceController {
 				if (finish.getOwner() != Player.NEUTRAL)
 					if (start.getOwner() != finish.getOwner())
 						if (startX - 1 == finishX && startY - 1 == finishY) { // upper left attack
-							if (debug)
-								LogFileController.writeToFile("[isPawnMoveValid] upper left attack");
+							LogFileController.writeToFile("upper left attack");
 							return true;
 						}
 						else if (startX - 1 == finishX && startY + 1 == finishY) { // upper right attack
-							if (debug) 
-								LogFileController.writeToFile("[isPawnMoveValid] upper right attack");
+							LogFileController.writeToFile("upper right attack");
 							return true;
 						}
 				if (startX - 1 == finishX && startY == finishY && finish.getOwner() == Player.NEUTRAL) { // front move
-					if (debug)
-						LogFileController.writeToFile("[isPawnMoveValid] upper front move");
+					LogFileController.writeToFile("upper front move");
 					return true;
 				}
 				return false;
@@ -78,8 +67,8 @@ public class PieceController {
 		}
 	}
 	
-	private static boolean isHorseMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
-		if (!isMoveValid(table, startX, startY, finishX, finishY, debug))
+	private static boolean isHorseMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
+		if (!isMoveValid(table, startX, startY, finishX, finishY))
 			return false;
 		if (startX - 1 == finishX && startY - 2 == finishY)
 			return true;
@@ -100,67 +89,56 @@ public class PieceController {
 		return false;
 	}
 	
-	private static boolean isBishopMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
-		if (!isMoveValid(table, startX, startY, finishX, finishY, debug))
+	private static boolean isBishopMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
+		if (!isMoveValid(table, startX, startY, finishX, finishY))
 			return false;
 		if (Math.abs(finishX - startX) != Math.abs(finishY - startY)) // not diagonal
 			return false;
-		if (debug)
-			LogFileController.writeToFile("[isBishopMoveValid] General check passed");
+		LogFileController.writeToFile("General check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		if (finishX - startX == finishY - startY) // upper left diagonal direction
 			for (int i = startX - 1, j = startY - 1; i > finishX && j > finishY; i--, j--) {
 				if (!TableController.isBlank(table, i, j)) {
-					if (debug)
-						LogFileController.writeToFile("[isBishopMoveValid] upper left diagonal direction failed at postion: " + i + " " + j);
+					LogFileController.writeToFile("upper left diagonal direction failed at position: (" + i + "," + j + ")");
 					return false;
 				}
 			}
-		if (debug)
-			LogFileController.writeToFile("[isBishopMoveValid] upper left diagonal direction check passed");
+		LogFileController.writeToFile("upper left diagonal direction check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		if (finishX - startX == startY - finishY) // upper right diagonal direction
 			for (int i = startX - 1, j = startY + 1; i > finishX && j < finishY; i--, j++) {
 				if (!TableController.isBlank(table, i, j)) {
-					if (debug)
-						LogFileController.writeToFile("[isBishopMoveValid] upper right diagonal direction failed at postion: " + i + " " + j);
+					LogFileController.writeToFile("upper right diagonal direction failed at position: (" + i + "," + j + ")");
 					return false;
 				}
 			}
-		if (debug)
-			LogFileController.writeToFile("[isBishopMoveValid] upper right diagonal direction check passed");
+		LogFileController.writeToFile("upper right diagonal direction check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		if (finishX - startX == startY - finishY) // lower left diagonal direction
 			for (int i = startX + 1, j = startY - 1; i < finishX && j > finishY; i++, j--) {
 				if (!TableController.isBlank(table, i, j)) {
-					if (debug)
-						LogFileController.writeToFile("[isBishopMoveValid] lower left diagonal direction failed at postion: " + i + " " + j);
+					LogFileController.writeToFile("lower left diagonal direction failed at position: (" + i + "," + j + ")");
 					return false;
 				}
 			}
-		if (debug)
-			LogFileController.writeToFile("[isBishopMoveValid] lower left diagonal direction check passed");
+		LogFileController.writeToFile("lower left diagonal direction check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		if (finishX - startX == finishY - startY) // lower right diagonal direction
 			for (int i = startX + 1, j = startY + 1; i < finishX && j < finishY; i++, j++) {
 				if (!TableController.isBlank(table, i, j)) {
-					if (debug)
-						LogFileController.writeToFile("[isBishopMoveValid] lower right diagonal direction failed at postion: " + i + " " + j);
+					LogFileController.writeToFile("lower right diagonal direction failed at position: (" + i + "," + j + ")");
 					return false;
 				}
 			}
-		if (debug)
-			LogFileController.writeToFile("[isBishopMoveValid] lower right diagonal direction check passed");
+		LogFileController.writeToFile("lower right diagonal direction check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		if (table.getPieces(finishX, finishY).getOwner() == table.getPieces(startX, startY).getOwner())
 			return false;
-		if (debug)
-			LogFileController.writeToFile("[isBishopMoveValid] attack move check passed");
+		LogFileController.writeToFile("attack move check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		return true;
 	}
 	
-	private static boolean isRookMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
-		if (!isMoveValid(table, startX, startY, finishX, finishY, debug))
+	private static boolean isRookMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
+		if (!isMoveValid(table, startX, startY, finishX, finishY))
 			return false;
 		if (startX != finishX && startY != finishY) // not on the same line or row
 			return false;
-		if (debug) 
-			LogFileController.writeToFile("[isRookMoveValid] Same line or low check passed");
+		LogFileController.writeToFile("same line or row check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		int minX = 0, minY = 0, maxX = 0, maxY = 0;
 		if (startX < finishX) { // choosing direction
 			minX = startX + 1;
@@ -178,74 +156,62 @@ public class PieceController {
 			minY = finishY + 1;
 			maxY = startY;
 		}
-		if (debug)
-			LogFileController.writeToFile("[isRookMoveValid] Direction chosen: minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY);
+		LogFileController.writeToFile("direction chosen: minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY);
 		if (startX == finishX)
 			for (int j = minY; j < maxY; j++)
 				if (!TableController.isBlank(table, startX, j)) {
-					if (debug) 
-						LogFileController.writeToFile("[isRookMoveValid] same row blank check failed at " + startX + " " + j);
+					LogFileController.writeToFile("same row blank check failed at (" + startX + "," + j + ")");
 					return false;
 				}
-		if (debug) 
-			LogFileController.writeToFile("[isRookMoveValid] Not on the same row / same row blank check passed");
+		LogFileController.writeToFile("not on the same row / same row blank check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		if (startY == finishY)
 			for (int i = minX; i < maxX; i++) {
-				if (debug) 
-					LogFileController.writeToFile("[isRookMoveValid] same line blank check failed at " + i + " " + startY);
+				LogFileController.writeToFile("same line blank check failed at (" + i + "," + startY + ")");
 				if (!TableController.isBlank(table, i, startY))
 					return false;
 			}
-		if (debug) 
-			LogFileController.writeToFile("[isRookMoveValid] Not on the same line / same line blank check passed");
+		LogFileController.writeToFile("not on the same line / same line blank check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		return true;
 	}
 	
-	private static boolean isQueenMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
-		if (!isMoveValid(table, startX, startY, finishX, finishY, debug))
+	private static boolean isQueenMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
+		if (!isMoveValid(table, startX, startY, finishX, finishY))
 			return false;
-		if (debug) {
-			LogFileController.writeToFile("[isQueenMoveValid] isBishopModeValid: " + PieceController.isBishopMoveValid(table, startX, startY, finishX, finishY, false));
-			LogFileController.writeToFile("[isQueenMoveValid] isRookMoveValid: " + PieceController.isRookMoveValid(table, startX, startY, finishX, finishY, false));
-		}
-		if (PieceController.isBishopMoveValid(table, startX, startY, finishX, finishY, debug)
-			|| PieceController.isRookMoveValid(table, startX, startY, finishX, finishY, debug))
+		if (PieceController.isBishopMoveValid(table, startX, startY, finishX, finishY)
+			|| PieceController.isRookMoveValid(table, startX, startY, finishX, finishY))
 			return true;
 		return false;
 	}
 	
-	private static boolean isKingMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
-		if (!isMoveValid(table, startX, startY, finishX, finishY, debug))
+	private static boolean isKingMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
+		if (!isMoveValid(table, startX, startY, finishX, finishY))
 			return false;
-		if (debug) 
-			LogFileController.writeToFile("[isKingMoveValid] general check passed");
+		LogFileController.writeToFile("general check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		if (finishX > startX + 1 || finishX < startX - 1 || finishY > startY + 1 || finishY < startY - 1)
 			return false; // check near vicinity restraint
-		if (debug)
-			LogFileController.writeToFile("[isKingMoveValid] near vicinity restraint passed");
+		LogFileController.writeToFile("near vicinity restraint passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		TableModel aux = new TableModel(table);
-		TableController.makeMove(aux, startX, startY, finishX, finishY, debug);
-		if (TableController.simpleIsCheck(aux, finishX, finishY, aux.getPieces(startX, startY).getOwner(), debug))
+		TableController.makeMove(aux, startX, startY, finishX, finishY);
+		if (TableController.simpleIsCheck(aux, finishX, finishY, aux.getPieces(startX, startY).getOwner()))
 			return false;
-		if (debug)
-			LogFileController.writeToFile("[isKingMoveValid] check passed");
+		LogFileController.writeToFile("check passed at positions: (" + startX + "," + startY + ") (" + finishX + "," + finishY + ")");
 		return true;
 	}
 	
-	public static boolean isGeneralMoveValid(TableModel table, int startX, int startY, int finishX, int finishY, boolean debug) {
+	public static boolean isGeneralMoveValid(TableModel table, int startX, int startY, int finishX, int finishY) {
 		switch (table.getPieces(startX, startY).getType()) {
 			case PAWN:
-				return isPawnMoveValid(table, startX, startY, finishX, finishY, debug);
+				return isPawnMoveValid(table, startX, startY, finishX, finishY);
 			case HORSE:
-				return isHorseMoveValid(table, startX, startY, finishX, finishY, debug);
+				return isHorseMoveValid(table, startX, startY, finishX, finishY);
 			case BISHOP:
-				return isBishopMoveValid(table, startX, startY, finishX, finishY, debug);
+				return isBishopMoveValid(table, startX, startY, finishX, finishY);
 			case ROOK:
-				return isRookMoveValid(table, startX, startY, finishX, finishY, debug);
+				return isRookMoveValid(table, startX, startY, finishX, finishY);
 			case QUEEN:
-				return isQueenMoveValid(table, startX, startY, finishX, finishY, debug);
+				return isQueenMoveValid(table, startX, startY, finishX, finishY);
 			case KING:
-				return isKingMoveValid(table, startX, startY, finishX, finishY, debug);
+				return isKingMoveValid(table, startX, startY, finishX, finishY);
 			default:
 				return false;
 		}

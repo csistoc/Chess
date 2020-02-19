@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -13,8 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-import controller.ChessGameFrameController;
+import controller.ChessFrameController;
 import controller.CurrentTime;
 import model.TableModel;
 
@@ -25,10 +23,13 @@ public class StartMenuFrame extends JFrame {
 	private static final String loadGameBtnName = "Load game";
 	private static final String exitGameBtnName = "Exit game";
 	private static final String aboutBtnName = "About";
+	private static final String leaderboardBtnName = "Leaderboard";
 	
-	public StartMenuFrame(String frameName, int sizeX, int sizeY, TableModel table, CurrentTime time) {
+	public StartMenuFrame(String frameName, int sizeX, int sizeY, CurrentTime time) {
 		super(frameName);
-		add(createMainPanel(frameName, sizeX, sizeY, time), BorderLayout.CENTER);
+		setPreferredSize(new Dimension(sizeX, sizeY));
+		createMainPanel(frameName, sizeX, sizeY, time);
+		add(createMainPanel(frameName, sizeX, sizeY, time));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
         setVisible(true);
@@ -36,8 +37,7 @@ public class StartMenuFrame extends JFrame {
 	
 	private JPanel createMainPanel(String frameName, int sizeX, int sizeY, CurrentTime time) {
 		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayout(4, 1));
-		mainPanel.setPreferredSize(new Dimension(sizeX, sizeY));
+		mainPanel.setLayout(new GridLayout(5, 1));
 		JButton newGameBtn = new JButton(newGameBtnName);
 		newGameBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
@@ -50,7 +50,15 @@ public class StartMenuFrame extends JFrame {
 		JButton loadGameBtn = new JButton(loadGameBtnName);
 		loadGameBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
-    			ChessGameFrameController.workInProgressInfo();
+    			ChessFrameController.workInProgressInfo();
+    		}
+		});
+		JButton leaderboardBtn = new JButton(leaderboardBtnName);
+		leaderboardBtn.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent e) {
+    			@SuppressWarnings("unused")
+				LeaderboardFrame leaderboardFrame = new LeaderboardFrame(frameName, sizeY, sizeY, time);
+    			dispose();
     		}
 		});
 		JButton aboutBtn = new JButton(aboutBtnName);
@@ -65,7 +73,6 @@ public class StartMenuFrame extends JFrame {
     			    }
     			    reader.close();
     			    } catch (FileNotFoundException ex) {
-    			    	System.out.println("An error occurred.");
     			    	ex.printStackTrace();
     			}
     			aboutInfoBox(aboutTextField, aboutBtnName);
@@ -79,6 +86,7 @@ public class StartMenuFrame extends JFrame {
 		});
 		mainPanel.add(newGameBtn);
 		mainPanel.add(loadGameBtn);
+		mainPanel.add(leaderboardBtn);
 		mainPanel.add(aboutBtn);
 		mainPanel.add(exitGameBtn);
 		return mainPanel;
