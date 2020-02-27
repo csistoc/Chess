@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import controller.CurrentTime;
 import controller.LogFileController;
@@ -23,13 +24,18 @@ public class ChessGameTextAreaPanel extends JPanel {
 	private static final String exitBtnName = "Exit";
 	private JTextArea textArea = new JTextArea(20, 15);
 	
-	public ChessGameTextAreaPanel(String frameName, int sizeX, int sizeY, TableModel table, CurrentTime time, ChessGameFrame chessGameFrame) {
+	public ChessGameTextAreaPanel(String frameName, String firstPlayerName, int sizeX, int sizeY, 
+			TableModel table, CurrentTime time, ChessGameFrame chessGameFrame) {
 		super();
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        setBorder(new EmptyBorder(5, 5, 5, 5));
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.append("[" + time.getCurrentTime() + "] Player 1 turn's\n");
+        textArea.append("[" + time.getCurrentTime() + "] " + firstPlayerName + " turn's\n");
         textArea.setEditable(false);
+        textArea.setOpaque(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setOpaque(false);
         JButton viewLogsFileBtn = new JButton(viewLogFileBtnName);
         viewLogsFileBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
@@ -42,6 +48,7 @@ public class ChessGameTextAreaPanel extends JPanel {
     			}
     		}
         });
+        viewLogsFileBtn.setVisible(false);
         JButton mainMenuBtn = new JButton(mainMenuBtnName);
         mainMenuBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
@@ -57,10 +64,9 @@ public class ChessGameTextAreaPanel extends JPanel {
     		}
         });
         add(viewLogsFileBtn);
+        add(scrollPane);
         add(mainMenuBtn);
         add(exitBtn);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        add(scrollPane);
 	}
 	
 	public JTextArea getTextArea() {

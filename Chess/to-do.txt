@@ -1,2 +1,3 @@
-=> make leader board and main menu look a little better
+=> adjust the spacing on the leader board
+=> implement pawn 2 step move when the piece is at the start
 => implement load game/save game options

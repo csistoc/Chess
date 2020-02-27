@@ -1,18 +1,19 @@
 package view;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import controller.CurrentTime;
 import controller.DBController;
+import controller.TextFormatController;
 
 public class LeaderboardFrame extends JFrame {
 
@@ -30,13 +31,19 @@ public class LeaderboardFrame extends JFrame {
 	
 	private JPanel createLeaderboardPanel(String frameName, int sizeX, int sizeY, CurrentTime time) {
 		JPanel leaderboardPanel = new JPanel();
-		leaderboardPanel.setLayout(new GridLayout(2, 1));
-		JTextArea lTextArea = new JTextArea(100, 100);
+		leaderboardPanel.setBorder(new EmptyBorder(50, 250, 50, 250));
+		leaderboardPanel.setLayout(new BorderLayout(0, 0));
+		JTextArea lTextArea = new JTextArea(15, 5);
 		lTextArea.setLineWrap(true);
 		lTextArea.setWrapStyleWord(true);
 		lTextArea.setEditable(false);
+		lTextArea.setOpaque(false);
+		
+		lTextArea.append(TextFormatController.leaderboardTypeFormat("Name", "Score"));
 		lTextArea.append(DBController.show());
 		JScrollPane scrollPane = new JScrollPane(lTextArea);
+		scrollPane.getViewport().setOpaque(false);
+		scrollPane.setOpaque(false);
 		JButton backBtn = new JButton(backBtnName);
 		backBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
@@ -45,8 +52,9 @@ public class LeaderboardFrame extends JFrame {
     			dispose();
     		}
 		});
-		leaderboardPanel.add(scrollPane);
-		leaderboardPanel.add(backBtn);
+		leaderboardPanel.add(scrollPane, BorderLayout.NORTH);
+		leaderboardPanel.add(backBtn, BorderLayout.SOUTH);
 		return leaderboardPanel;
 	}
+	
 }

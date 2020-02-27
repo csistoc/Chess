@@ -1,6 +1,7 @@
 package controller;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,6 +54,7 @@ public class DBController {
 				createScoresTable(stmt, scoreTableName, scoreFieldID, scoreFieldValue, playerFieldID);
 				LogFileController.writeToFile("created " + scoreTableName + " table");
 			}
+			else LogFileController.writeToFile("found " + scoreTableName + " table");
 			
 			if (isTableEmpty(stmt, playerTableName)) {
 				LogFileController.writeToFile("empty table found");
@@ -146,12 +148,16 @@ public class DBController {
 	private static int getLatestIDFromTable(Statement stmt, String tableName, String id) throws SQLException {
 		String getIDSql = "SELECT MAX(" + id + ") FROM " + tableName;
 		ResultSet rs = stmt.executeQuery(getIDSql);
-		return rs.getInt(id);
+		rs.next();
+		return rs.getInt("MAX(" + id + ")");
 	}
 	
 	private static int getSpecificIDFromTable(Statement stmt, String tableName, String searchingField, String valueSearched, String id) throws SQLException {
-		String getIDSql = "SELECT * FROM " + tableName + " WHERE " + searchingField + " = " + valueSearched;
-		ResultSet rs = stmt.executeQuery(getIDSql);
+		String getIDSql = "SELECT * FROM " + tableName + " WHERE " + searchingField + " = ?";
+		PreparedStatement pstmt = stmt.getConnection().prepareStatement(getIDSql);
+		pstmt.setString(1, valueSearched);
+		ResultSet rs = pstmt.executeQuery();
+		rs.next();
 		return rs.getInt(id);
 	}
 	
@@ -185,6 +191,11 @@ public class DBController {
 		}
 	}
 	
+	public static void insertData(String playerName, int value) {
+		insertIntoPlayersTable(playerName);
+		insertIntoScoresTable(playerName, value);
+	}
+	
 	public static void close() {
 		try {
 			stmt.close();
@@ -197,10 +208,10 @@ public class DBController {
 	public static String show(String firstTableName, String secondTableName, String commonID) {
 		String output = new String();
 		try {
-			String selectJoinSql = "SELECT * FROM " + firstTableName + " x JOIN " + secondTableName + " y ON x." + commonID + " = y." + commonID;
+			String selectJoinSql = "SELECT * FROM " + firstTableName + " x JOIN " + secondTableName + " y ON x." + commonID + " = y." + commonID + " ORDER BY value";
 			ResultSet rs = stmt.executeQuery(selectJoinSql);
 			while (rs.next())
-				output += rs.getInt("playerID") + " " + rs.getString("name") + " " + rs.getInt("value") + "\n";
+				output += TextFormatController.leaderboardFormat(rs.getString("name"), rs.getInt("value"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -209,6 +220,27 @@ public class DBController {
 	
 	public static String show() {
 		return show(playerTableName, scoreTableName, commonFieldID);
+	}
+	
+	public static void showTableType() {
+		try {
+			ResultSet rsColumns = null;
+		    DatabaseMetaData meta;
+			meta = conn.getMetaData();
+			rsColumns = meta.getColumns(null, null, playerTableName, null);
+		    while (rsColumns.next()) {
+		      System.out.println(rsColumns.getString("TYPE_NAME"));
+		      System.out.println(rsColumns.getString("COLUMN_NAME"));
+		    }
+		    System.out.println("--------------");
+		    rsColumns = meta.getColumns(null, null, scoreTableName, null);
+		    while (rsColumns.next()) {
+		      System.out.println(rsColumns.getString("TYPE_NAME"));
+		      System.out.println(rsColumns.getString("COLUMN_NAME"));
+		    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
 
