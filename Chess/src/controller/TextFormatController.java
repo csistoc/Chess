@@ -21,7 +21,6 @@ public class TextFormatController {
 		while (output.length() + name.length() < spacing)
 			output += " ";
 		output += name;
-		System.out.println((int)(Math.log10(value)) + 1 + " " + (output.length() + (int)(Math.log10(value)) + 1));
 		while (output.length() + (int)(Math.log10(value)) + 1 < 2 * spacing)
 			output += " ";
 		output += value;

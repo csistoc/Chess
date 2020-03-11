@@ -43,6 +43,10 @@ public class PieceController {
 					LogFileController.writeToFile("lower front move");
 					return true;
 				}
+				if (startX == 1 && startX + 2 == finishX && startY == finishY && finish.getOwner() == Player.NEUTRAL) { // start position front leap
+					LogFileController.writeToFile("lower front leap move");
+					return true;
+				}
 				return false;
 			}
 			case PLAYER2: {
@@ -58,6 +62,11 @@ public class PieceController {
 						}
 				if (startX - 1 == finishX && startY == finishY && finish.getOwner() == Player.NEUTRAL) { // front move
 					LogFileController.writeToFile("upper front move");
+					return true;
+				}
+				if (startX == (int)(Math.sqrt(table.getPieces().size()) - 2)
+						&& startX - 2 == finishX && startY == finishY && finish.getOwner() == Player.NEUTRAL) { // start position front leap
+					LogFileController.writeToFile("upper front leap move");
 					return true;
 				}
 				return false;

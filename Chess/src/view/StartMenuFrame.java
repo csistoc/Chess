@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import controller.ChessFrameController;
 import controller.CurrentTime;
 import model.TableModel;
 
@@ -51,7 +50,9 @@ public class StartMenuFrame extends JFrame {
 		JButton loadGameBtn = new JButton(loadGameBtnName);
 		loadGameBtn.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent e) {
-    			ChessFrameController.workInProgressInfo();
+    			@SuppressWarnings("unused")
+				LoadgameFrame loadgameFrame = new LoadgameFrame(frameName, sizeX, sizeY, time);
+    			dispose();
     		}
 		});
 		JButton leaderboardBtn = new JButton(leaderboardBtnName);
@@ -118,7 +119,7 @@ public class StartMenuFrame extends JFrame {
 		secondPlayerName = result;
 		TableModel table = new TableModel();
 		@SuppressWarnings("unused")
-		ChessGameFrame gameFrame = new ChessGameFrame(frameName, firstPlayerName, secondPlayerName, sizeY, sizeY, table, time);
+		ChessGameFrame gameFrame = new ChessGameFrame(frameName, firstPlayerName, secondPlayerName, sizeY, sizeY, table, 0, time);
 		startMenuFrame.dispose();
 	}
 	

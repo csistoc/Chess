@@ -38,7 +38,6 @@ public class LogFileController {
 					writer.write(ste.getMethodName() + " : ");
 			}
 			writer.write(text + "\n");
-			//writer.write("[" + time.getCurrentTime() + "]" + text + "\n");
 		} catch (Exception e) {
 			closeWriter();
 			e.printStackTrace();

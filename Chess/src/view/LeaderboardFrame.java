@@ -38,7 +38,6 @@ public class LeaderboardFrame extends JFrame {
 		lTextArea.setWrapStyleWord(true);
 		lTextArea.setEditable(false);
 		lTextArea.setOpaque(false);
-		
 		lTextArea.append(TextFormatController.leaderboardTypeFormat("Name", "Score"));
 		lTextArea.append(DBController.show());
 		JScrollPane scrollPane = new JScrollPane(lTextArea);

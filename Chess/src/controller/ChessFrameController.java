@@ -6,6 +6,9 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import model.Player;
+import model.TableModel;
+import view.ChessGameFrame;
+import view.StartMenuFrame;
 
 public class ChessFrameController {
 	
@@ -60,4 +63,32 @@ public class ChessFrameController {
 	public static void workInProgressInfo() {
         JOptionPane.showMessageDialog(null, "Work in progress, feature not available yet.", "Work in progress", JOptionPane.INFORMATION_MESSAGE);
     }
+	
+	public static void endGame(String winPlayer, ChessGameFrame chessGameFrame, String frameName, String firstPlayerName, String secondPlayerName,
+			int sizeX, int sizeY, TableModel table, CurrentTime time) {
+		String text = winPlayer + " has won. Would you like to start another game?";
+		Object[] options = {"Yes",
+				"Return to main menu", 
+                "Exit"};
+		int choice = JOptionPane.showOptionDialog(chessGameFrame, 
+				text,
+				"Check mate Question",
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null, 
+				options, 
+				options[0]); 
+		if (choice == JOptionPane.YES_OPTION) {
+			TableModel newTable = new TableModel();
+			@SuppressWarnings("unused")
+			ChessGameFrame newChessGameFrame = new ChessGameFrame(frameName, firstPlayerName, secondPlayerName, sizeY, sizeY, newTable, 0, time);
+			chessGameFrame.dispose();
+		}
+		else if(choice == JOptionPane.NO_OPTION) {
+			@SuppressWarnings("unused")
+			StartMenuFrame startMenuFrame = new StartMenuFrame(frameName, sizeX, sizeY, time);
+			chessGameFrame.dispose();
+		}
+		else System.exit(0);
+	}
 }

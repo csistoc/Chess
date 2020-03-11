@@ -1,4 +1,4 @@
-[17:08:20] init : run : main : connecting to database...
-[17:08:20] init : run : main : created/found database
-[17:08:20] init : run : main : found Players table
-[17:08:20] init : run : main : found Scores table
+[16:39:17] init : run : main : connecting to database...
+[16:39:18] init : run : main : created/found database
+[16:39:18] init : run : main : found Players table
+[16:39:18] init : run : main : found Scores table

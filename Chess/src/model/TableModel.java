@@ -51,6 +51,19 @@ public class TableModel {
 		this.sizeY = table.sizeY;
 	}
 	
+	public TableModel(ArrayList<String> loadGameFileRawData) {
+		int rawDataIndex = 0;
+		pieces = new ArrayList<PieceModel>();
+		for (int i = 0; i < sizeX; i++)
+			for (int j = 0; j < sizeY; j++) {
+				pieces.add(new PieceModel(Integer.parseInt(loadGameFileRawData.get(rawDataIndex + 1)), 
+						Integer.parseInt(loadGameFileRawData.get(rawDataIndex + 2)),
+						Player.valueOf(loadGameFileRawData.get(rawDataIndex + 3)),
+						PieceType.valueOf(loadGameFileRawData.get(rawDataIndex))));
+				rawDataIndex += 4;
+			}
+	}
+	
 	public ArrayList<PieceModel> getPieces() {
 		return pieces;
 	}
@@ -128,6 +141,13 @@ public class TableModel {
 		String output = new String();
 		for (int i = 0; i < pieces.size(); i++)
 			output += pieces.get(i) + "\n";
+		return output;
+	}
+	
+	public String rawDataToString() {
+		String output = new String();
+		for (int i = 0; i < pieces.size(); i++)
+			output += pieces.get(i).rawDataToString() + "\n";
 		return output;
 	}
 }

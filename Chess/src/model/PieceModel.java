@@ -65,6 +65,10 @@ public class PieceModel {
 	}
 	
 	public String toString() {
-		return "Type: " + type.name() + " Location: " + location.getX() + " " + location.getY() + " Owner: " + player.name();
+		return "Type: " + type.name() + " Location: " + location.getX() + " " + location.getY() + " Owner: " + player.name() + "\n";
+	}
+	
+	public String rawDataToString() {
+		return type.name() + " " + location.getX() + " " + location.getY() + " " + player.name();
 	}
 }
